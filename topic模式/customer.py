@@ -6,14 +6,19 @@ Created on 2018年7月18日
 '''
 import pika
 import sys
+'''
+接收的消息为与之前生产者的routing_key要相匹配
+比如*.order.*匹配的是之前的XXXX.order.xxxxx，
+只要routing_key之间的值为.order.的话就可以放在此队列中
+'''
 class topic_test():
-    def __init__(self,username,pwd,host,port,vhosts='/'):
+    def __init__(self,username,pwd,host,port,vhosts='/',key='ha'):
         self.username=username
         self.pwd=pwd
         self.host=host
         self.port=port
         self.vhosts=vhosts
-        
+        self.binding_key=key#输入的绑定key
         self.user_pwd=pika.PlainCredentials(self.username,self.pwd)
         self.conn_params=pika.ConnectionParameters(self.host,self.port,self.vhosts,self.user_pwd)
         try:
@@ -25,10 +30,14 @@ class topic_test():
     def create_customer(self):
         try:
             #声明一个队列，生产者和消费者都要声明一个相同的队列，用来防止万一某一方挂了，另一方能正常运行
-            a=self.channel.queue_declare(queue='direct_queue', durable=True)
-            print("连接成功",a)
+            a=self.channel.queue_declare(queue='topic_queue', durable=True)
+            queue_name = a.method.queue
+            print("连接成功",queue_name)
         except Exception as e:
             print("连接失败",str(e))
+        self.channel.queue_bind(exchange='topic_type',
+                       queue=queue_name,
+                       routing_key=self.binding_key)
         #消费数据，回调函数
         def callback(ch, method, properties, body): 
             print("doby",body.decode())
@@ -48,14 +57,14 @@ class topic_test():
         '''
         self.channel.basic_qos(prefetch_count=1)
         self.channel.basic_consume(callback,
-                          queue='direct_queue')
+                          queue='topic_queue')
         #开始循环从queue中接收message并使用callback进行处理
         print("循环处理消息")
         self.channel.start_consuming()
         self.connection.close()
 
 if __name__=="__main__":
-    test=topic_test('admin','123456','172.17.39.42',5672,'my_ha_test_vhosts')
+    test=topic_test('admin','123456','172.17.39.42',5672,'my_ha_test_vhosts','*.order.*')
     test.create_customer()
     #删除队列
     
