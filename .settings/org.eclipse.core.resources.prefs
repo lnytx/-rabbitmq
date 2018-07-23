@@ -1,6 +1,11 @@
 eclipse.preferences.version=1
+encoding//RPC\u6A21\u5F0F/client.py=utf-8
+encoding//RPC\u6A21\u5F0F/server.py=utf-8
+encoding//dirct\u6A21\u5F0F/class_type/producer.py=utf-8
 encoding//dirct\u6A21\u5F0F/customer.py=utf-8
 encoding//dirct\u6A21\u5F0F/producer.py=utf-8
+encoding//fanout\u6A21\u5F0F/customer.py=utf-8
+encoding//fanout\u6A21\u5F0F/producer.py=utf-8
 encoding//python_rabbitmq1/customer.py=utf-8
 encoding//python_rabbitmq1/producer.py=utf-8
 encoding//topic\u6A21\u5F0F/customer.py=utf-8

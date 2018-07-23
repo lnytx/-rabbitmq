@@ -18,17 +18,18 @@ class topic_test():
         self.conn_params=pika.ConnectionParameters(self.host,self.port,self.vhosts,self.user_pwd)
         try:
             self.connection = pika.BlockingConnection(self.conn_params)
+            self.channel = self.connection.channel() #在连接上创建一个通道
         except Exception as e:
             print("连接失败",str(e))
-        self.channel = self.connection.channel() #在连接上创建一个通道
+        
         
     def create_producer(self):
         #声明一个队列，生产者和消费者都要声明一个相同的队列，用来防止万一某一方挂了，另一方能正常运行
         try:
             #ch = channel.queue_declare(queue='pikamq')
-            a=self.channel.queue_declare(queue="topic_queue", durable=True, exclusive=False, auto_delete=False)
-            b=self.channel.exchange_declare(exchange="topic_queue", exchange_type="direct", durable=True, auto_delete=False)
-            c=self.channel.queue_bind(queue="topic_queue", exchange="topic_queue",routing_key="jason")  
+            a=self.channel.queue_declare(queue="direct_queue", durable=True, exclusive=False, auto_delete=False)
+            b=self.channel.exchange_declare(exchange="direct_exc", exchange_type="direct", durable=True, auto_delete=False)
+            c=self.channel.queue_bind(queue="direct_queue", exchange="direct_exc",routing_key="jason")  
             print("创建queue成功",a)
             print("创建exchange成功",b)
             print("创建equeue_bind成功",c)
@@ -39,7 +40,7 @@ class topic_test():
     #         channel.basic_publish(exchange='test2', #交换机
     #                               routing_key='jason',  # queue名字 #路由键，写明将消息发往哪个队列，本例是将消息发往队列pikamq
     #                               body='测试数据_'+str(i)) # 消息内容
-                self.channel.basic_publish(exchange='topic_queue',
+                self.channel.basic_publish(exchange='direct_exc',
                                   routing_key='jason',
                                   body='测试数据_'+str(i),
                                   properties=pika.BasicProperties(content_type='text/plain',
