@@ -13,7 +13,7 @@ def create_producer():
     username='admin'
     pwd='123456'
     user_pwd=pika.PlainCredentials(username,pwd)
-    conn_params=pika.ConnectionParameters('192.168.23.129',55672,'my_ha_test_vhosts',user_pwd)
+    conn_params=pika.ConnectionParameters('192.168.160.136',55672,'my_ha_test_vhosts',user_pwd)
     try:
         connection = pika.BlockingConnection(conn_params)
         print("连接成功",connection)
